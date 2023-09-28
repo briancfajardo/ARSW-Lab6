@@ -1,0 +1,18 @@
+Preguntas:
+	1. ¿Qué condiciones de carrera se podrían presentar?
+		
+		- Cuando 2 o más usuarios intenten crear un plano con el mismo nombre y el mismo autor al mismo tiempo
+		- Cuando 2 o más usuarios intenten actualizar el mismo plano al mismo tiempo
+		- Cuando un usuario está intentando actualizar un plano y otro intenta consultarlo
+		
+	2. Cuáles son las respectivas regiones críticas?
+
+		- En el primer caso, la región crítica se encuentra en la capa de persistencia, en la clase de InMemoryPersistence
+		el método saveBlueprint().
+		- En el segundo caso, la región crítica se encuentra en la capa de persistencia, en la clase de InMemoryPersistence
+		el método updateBluePrint().
+		- En el tercer caso, la región crítica se encuentra en los dos casos anteriores.
+		
+Análisis:
+
+Los métodos mencionados en el punto anterior se les agregó el synchronized para evitar las condiciones de carrera mencionados
