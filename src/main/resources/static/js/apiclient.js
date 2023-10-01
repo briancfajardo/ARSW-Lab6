@@ -1,7 +1,7 @@
 apiclient = (function () {
 
     let _handleError = function () {
-        alert("Nombre no valido.");
+        alert("Nombre no válido.");
     }
 
     return {

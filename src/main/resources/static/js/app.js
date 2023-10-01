@@ -92,6 +92,7 @@ let app = (function (api){
         api.getBlueprintsByNameAndAuthor(authorName, bpname, _updateCanvas);
     }
     return publicFunctions;
+
 })(apiclient);
 
 $(document).ready(function() {
