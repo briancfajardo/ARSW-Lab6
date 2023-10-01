@@ -2,7 +2,6 @@
 
 let app = (function (api){
     let _author = "";
-    let _blueprints = [];
     let publicFunctions = {};
 
     /*
@@ -14,15 +13,14 @@ let app = (function (api){
     */
     let _bpTable = (data) => {
         $(document).ready(() => {
-            console.log(data);
-            let object = _convToObj(data);
+            $('#search-bar').val("");
+            let object = _convBpListToObj(data);
             _createTable(object, data);
             _totalPoints(object);
-            _blueprints = object;
         });
     }
 
-    let _convToObj = (data) => {
+    let _convBpListToObj = (data) => {
         return data.map((elem) => ({
             name: elem.name,
             numPoints: elem.points.length
@@ -30,14 +28,16 @@ let app = (function (api){
     }
 
     let _createTable = (obj, data) => {
-        $("#author").text(`${data[0].author}'s blueprints`);
+        $("#blueprints").removeClass("hide");
+        $("#bp-frame").addClass("hide");
+        $("#author").text(`${data[0].author}'s blueprints: `);
         $("#blueprints tbody").text("");
         obj.map((elem) => {
             let rows = `
             <tr>
                 <td>${elem.name}</td>
                 <td>${elem.numPoints}</td>
-                <td><button>Open</button></td>
+                <td><button onclick="app.drawBP('${data[0].author}', '${elem.name}')">Open</button></td>
             </tr>`;
             $("#blueprints tbody").append(rows);
         })
@@ -45,9 +45,41 @@ let app = (function (api){
 
     let _totalPoints = (data) => {
         let totalPoints = data.reduce((total, i) => total + i.numPoints, 0);
-        $("#total-points").html(totalPoints);
+        $("#user-points").text("Total user points: "+totalPoints);
     }
 
+    let _updateCanvas = (data) => {
+        $(document).ready(() => {
+            //let bp = _convBpToObj(data);
+            _drawBluePrint(data);
+        });
+    }
+
+    let _convBpToObj = (data) => {
+        return data.map((elem) => ({
+            bpName: elem.name,
+            points: elem.points
+        }));
+    }
+
+    let _drawBluePrint = (bp) => {
+        _showInfoBP(bp);
+        let points = bp.points;
+        let canvas = $("#canvas-bp")[0];
+        let ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.beginPath();
+        ctx.moveTo(points[0].x, points[0].y);
+        for (let i = 1; i < points.length; i++) {
+            const point = points[i];
+            ctx.lineTo(point.x, point.y);
+        }
+        ctx.stroke();
+    }
+    let _showInfoBP = (bp) => {
+        $("#bp-name").text("Current Blue Print: " + bp.name);
+        $("#bp-frame").removeClass("hide");
+    }
     publicFunctions.setName = function (newName) {
         _author = newName;
     }
@@ -55,5 +87,19 @@ let app = (function (api){
     publicFunctions.updateBlueprints = function (authorName){
         api.getBlueprintsByAuthor(authorName, _bpTable);
     }
+
+    publicFunctions.drawBP = function (authorName, bpname) {
+        api.getBlueprintsByNameAndAuthor(authorName, bpname, _updateCanvas);
+    }
     return publicFunctions;
-})(apimock);
+})(apiclient);
+
+$(document).ready(function() {
+    $('input').keyup(function(event) {
+        if (event.which === 13)
+        {
+            event.preventDefault();
+            $('#find-bp').click();
+        }
+    });
+});
