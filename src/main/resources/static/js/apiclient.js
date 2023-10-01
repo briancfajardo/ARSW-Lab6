@@ -1,9 +1,7 @@
 apiclient = (function () {
 
     let _handleError = function () {
-        //$("#successful-search").addClass("remove");
-        //$("#search-error").removeClass("remove");
-        console.log("Good job");
+        alert("Nombre no valido.");
     }
 
     return {
